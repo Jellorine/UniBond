@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, FlatList, ActivityIndicator, Alert } from 'react-native';
 import JobCard from './JobCard';
 import { supabase } from '@/app/lib/supabse'; // Assuming this path
+import { deleteJob } from './DeleteFunction' // Import the delete function
 
 interface JobListing {
   id: string;
@@ -104,7 +105,6 @@ const AvailableJobs: React.FC = () => {
   };
 
 
-
   // Save or unsave a job
   const saveJob = async (jobId: string) => {
     if (!user) {
@@ -145,19 +145,21 @@ const AvailableJobs: React.FC = () => {
     <View style={{ flex: 1, padding: 10 }}>
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="#0000ff" />
         </View>
       ) : (
         <FlatList
           data={jobListings}
           renderItem={({ item }) => (
-            <JobCard   //sending props
+            <JobCard
               {...item}
               expandedJobId={expandedJobId}
               jobId={item.id}
               savedJobs={savedJobIds}
               onSaveJob={saveJob}
               toggleExpand={toggleExpand}
+              currentUserId={user?.id}
+              onDeleteJob={() => deleteJob(item.id, item.image_url, setJobListings)} // Use the function
             />
           )}
         />
