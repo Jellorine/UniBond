@@ -429,7 +429,7 @@ export default function ShowProfileEdit() {
       </View>
 
       {/* Profile Header */}
-      <View style={{ marginTop: 30, marginHorizontal: 40 }}>
+      <View style={{ marginTop: 30, marginHorizontal: 20 }}>
         <View
           style={{
             flexDirection: "row",
@@ -437,6 +437,7 @@ export default function ShowProfileEdit() {
             justifyContent: "space-between",
           }}
         >
+          {/* Profile Picture */}
           <ShowingAvatar
             url={avatarUrl}
             size={40}
@@ -448,38 +449,26 @@ export default function ShowProfileEdit() {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              marginRight: 20,
-            
+              justifyContent: "space-between",
+              flex: 1,
+              marginLeft: 20,
             }}
           >
-            <View
-              style={{
-                alignItems: "center",
-                marginHorizontal: 10,
-              }}
-            >
+            <View style={{ alignItems: "center" }}>
               <Text style={{ fontSize: 16, fontWeight: "bold" }}>
                 {postsCount}
               </Text>
               <Text style={{ fontSize: 14, color: "#666" }}>Posts</Text>
             </View>
 
-            <Text style={{ fontSize: 20, color: "#666", marginHorizontal: 5 }}>
-              |
-            </Text>
-
-            <View style={{ alignItems: "center", marginHorizontal: 5 }}>
+            <View style={{ alignItems: "center" }}>
               <Text style={{ fontSize: 16, fontWeight: "bold" }}>
                 {followersCount}
               </Text>
               <Text style={{ fontSize: 14, color: "#666" }}>Followers</Text>
             </View>
 
-            <Text style={{ fontSize: 20, color: "#666", marginHorizontal: 5 }}>
-              |
-            </Text>
-
-            <View style={{ alignItems: "center", marginHorizontal: 5 }}>
+            <View style={{ alignItems: "center" }}>
               <Text style={{ fontSize: 16, fontWeight: "bold" }}>
                 {followingCount}
               </Text>

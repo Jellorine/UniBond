@@ -25,20 +25,50 @@ interface ProjectData {
   skills: string;
   is_saved: boolean;
   is_applied: boolean;
+  time_posted: string;
+  avatar_url?: string; // Add avatar_url to the interface
+}
+
+interface ProfileData {
+  id: string;
+  avatar_url: string;
 }
 
 export default function ProjectTitleBox() {
   const [projectData, setProjectData] = useState<ProjectData[]>([]);
+  const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Function to fetch project data
+  // Function to fetch project data and profiles
   const fetchData = async () => {
     try {
-      const { data, error } = await supabase.from("projects").select("*");
-      if (error) throw error;
-      setProjectData(data || []);
+      // Fetch projects
+      const { data: projects, error: projectsError } = await supabase
+        .from("projects")
+        .select("*");
+      if (projectsError) throw projectsError;
+
+      // Fetch profiles
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, avatar_url");
+      if (profilesError) throw profilesError;
+
+      // Map profiles to projects
+      const projectsWithProfiles = projects.map((project) => {
+        const profile = profiles.find((p) => p.id === project.user_id);
+        return {
+          ...project,
+          avatar_url: profile?.avatar_url
+            ? `https://jnqvgrycauzjnvepqorq.supabase.co/storage/v1/object/public/avatars/${profile.avatar_url}`
+            : null,
+        };
+      });
+
+      setProjectData(projectsWithProfiles);
+      setProfiles(profiles);
     } catch (error) {
-      console.error("Error fetching project data:", error);
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
@@ -60,11 +90,11 @@ export default function ProjectTitleBox() {
 
       if (error) throw error;
 
-      // Update the local state by modifying the specific project
+      // Update the local state
       setProjectData((prevProjects) =>
         prevProjects.map((project) =>
           project.project_id === projectId
-            ? { ...project, is_saved: true } // Mark this project as saved
+            ? { ...project, is_saved: true }
             : project
         )
       );
@@ -100,7 +130,6 @@ export default function ProjectTitleBox() {
 
       Alert.alert("You Can Send Message to applied for the project!");
 
-      // Navigate only if userId is valid
       router.push(`../user?userId=${encodeURIComponent(user_id)}`);
     } catch (error) {
       console.error("Error applying to project:", error);
@@ -108,6 +137,44 @@ export default function ProjectTitleBox() {
         "Error",
         "Failed to apply for the project. Please try again."
       );
+    }
+  };
+
+  const calculatePostDuration = (datePosted: string, timePosted: string) => {
+    const postDateTime = new Date(`${datePosted}T${timePosted}`); // Combine and parse
+
+    // Check if the date is valid
+    if (isNaN(postDateTime.getTime())) {
+      throw new Error("Invalid date or time format");
+    }
+
+    const currentDate = new Date();
+    const timeDifference = currentDate.getTime() - postDateTime.getTime();
+
+    // Handle case where the post date is in the future
+    if (timeDifference < 0) {
+      return "Just now";
+    }
+
+    const seconds = Math.floor(timeDifference / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 7) {
+      return postDateTime.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      });
+    } else if (days > 0) {
+      return `${days} day${days > 1 ? "s" : ""} ago`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    } else {
+      return "Just now";
     }
   };
 
@@ -132,14 +199,14 @@ export default function ProjectTitleBox() {
       <Text style={styles.title}>{item.project_title}</Text>
       <View style={styles.userInfo}>
         <Image
-          source={{ uri: "https://via.placeholder.com/40" }}
+          source={{ uri: item.avatar_url || "https://via.placeholder.com/40" }} // Use avatar_url or a fallback
           style={styles.avatar}
         />
         <View style={styles.textGroup}>
-          <Text style={styles.name}>User : {item.user_name}</Text>
+          <Text style={styles.name}>{item.user_name}</Text>
           <Text style={styles.location}>{item.location}</Text>
           <Text style={styles.date}>
-            {new Date(item.date_posted).toLocaleDateString()}
+            {calculatePostDuration(item.date_posted, item.time_posted)}
           </Text>
         </View>
       </View>
@@ -157,7 +224,7 @@ export default function ProjectTitleBox() {
         <TouchableOpacity
           style={styles.saveButton}
           onPress={() => handleSave(item.project_id)}
-          disabled={item.is_saved} // Disable if the project is saved
+          disabled={item.is_saved}
         >
           <Text style={styles.buttonText}>
             {item.is_saved ? "Saved" : "Save"}
@@ -165,7 +232,7 @@ export default function ProjectTitleBox() {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.applyButton}
-          onPress={() => handleApply(item.project_id, item.user_id)} // ✅ Ensure user_id is passed
+          onPress={() => handleApply(item.project_id, item.user_id)}
         >
           <Text style={styles.buttonText}>Apply</Text>
         </TouchableOpacity>
@@ -249,7 +316,6 @@ const styles = StyleSheet.create({
   saveButton: {
     backgroundColor: "#000",
     paddingVertical: 12,
-    paddingHorizontal: 20,
     borderRadius: 8,
     flex: 1,
     marginRight: 8,
@@ -258,7 +324,6 @@ const styles = StyleSheet.create({
   applyButton: {
     backgroundColor: "#000",
     paddingVertical: 12,
-    paddingHorizontal: 20,
     borderRadius: 8,
     flex: 1,
     marginLeft: 8,
