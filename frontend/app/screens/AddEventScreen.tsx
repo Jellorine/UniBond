@@ -16,6 +16,7 @@ import { supabase } from "../lib/supabse";
 import { useAuth } from "../providers/AuthProvider";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
+
 import { PostStackParamList } from "./PostNav";
 
 const EventScreen = () => {
@@ -109,83 +110,83 @@ const EventScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Create Event</Text>
-      <TouchableOpacity onPress={handleCancel} style={styles.cancelButton}>
-        <Ionicons name="close" size={24} color="#000" />
-      </TouchableOpacity>
-
-      {/* Event Name Input */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Event Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter event name"
-          value={eventName}
-          onChangeText={(text) => {
-            setEventName(text);
-            setHasChanges(true);
-          }}
-        />
-      </View>
-
-      {/* Event Date Input */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Event Date</Text>
-        <TouchableOpacity
-          style={styles.dateInput}
-          onPress={() => setShowDatePicker(true)}
-        >
-          <Text style={styles.dateText}>
-            {eventDate
-              ? eventDate.toISOString().split("T")[0]
-              : "Select a date"}
-          </Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.header}>Create Event</Text>
+        <TouchableOpacity onPress={handleCancel} style={styles.cancelButton}>
+          <Ionicons name="close" size={24} color="#000" />
         </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            value={eventDate || new Date()}
-            mode="date"
-            display="default"
-            onChange={onDateChange}
+
+        {/* Event Name Input */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Event Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter event name"
+            value={eventName}
+            onChangeText={(text) => {
+              setEventName(text);
+              setHasChanges(true);
+            }}
           />
-        )}
-      </View>
+        </View>
 
-      {/* Event Location Input */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Event Location</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter event location"
-          value={eventLocation}
-          onChangeText={(text) => {
-            setEventLocation(text);
-            setHasChanges(true);
-          }}
-        />
-      </View>
+        {/* Event Date Input */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Event Date</Text>
+          <TouchableOpacity
+            style={styles.dateInput}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={styles.dateText}>
+              {eventDate
+                ? eventDate.toISOString().split("T")[0]
+                : "Select a date"}
+            </Text>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+              value={eventDate || new Date()}
+              mode="date"
+              display="default"
+              onChange={onDateChange}
+            />
+          )}
+        </View>
 
-      {/* Event Description Input */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Event Description</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Enter event description"
-          value={eventDescription}
-          onChangeText={(text) => {
-            setEventDescription(text);
-            setHasChanges(true);
-          }}
-          multiline
-          numberOfLines={4}
-        />
-      </View>
+        {/* Event Location Input */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Event Location</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter event location"
+            value={eventLocation}
+            onChangeText={(text) => {
+              setEventLocation(text);
+              setHasChanges(true);
+            }}
+          />
+        </View>
 
-      <TouchableOpacity style={styles.postButton} onPress={handlePost}>
-        <Text style={styles.postButtonText}>Post</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        {/* Event Description Input */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Event Description</Text>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            placeholder="Enter event description"
+            value={eventDescription}
+            onChangeText={(text) => {
+              setEventDescription(text);
+              setHasChanges(true);
+            }}
+            multiline
+            numberOfLines={4}
+          />
+        </View>
+
+        <TouchableOpacity style={styles.postButton} onPress={handlePost}>
+          <Text style={styles.postButtonText}>Post</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 };
