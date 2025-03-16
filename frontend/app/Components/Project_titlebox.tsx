@@ -175,6 +175,44 @@ export default function ProjectTitleBox() {
     }
   };
 
+  const calculatePostDuration = (datePosted: string, timePosted: string) => {
+    const postDateTime = new Date(`${datePosted}T${timePosted}`); // Combine and parse
+
+    // Check if the date is valid
+    if (isNaN(postDateTime.getTime())) {
+      throw new Error("Invalid date or time format");
+    }
+
+    const currentDate = new Date();
+    const timeDifference = currentDate.getTime() - postDateTime.getTime();
+
+    // Handle case where the post date is in the future
+    if (timeDifference < 0) {
+      return "Just now";
+    }
+
+    const seconds = Math.floor(timeDifference / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 7) {
+      return postDateTime.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      });
+    } else if (days > 0) {
+      return `${days} day${days > 1 ? "s" : ""} ago`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    } else {
+      return "Just now";
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loader}>

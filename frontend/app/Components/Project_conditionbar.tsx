@@ -27,13 +27,15 @@ export default function ProjectConditionBar() {
                 tab === "Available"
                   ? "person"
                   : tab === "Saved"
-                  ? "bookmark"
-                  : "time"
+                    ? "bookmark"
+                    : "time"
               }
               size={24}
               color={activeTab === tab ? "#2C3036" : "#8E8E93"}
             />
-            <Text style={[styles.tabText, activeTab === tab && styles.activeText]}>
+            <Text
+              style={[styles.tabText, activeTab === tab && styles.activeText]}
+            >
               {tab}
             </Text>
           </TouchableOpacity>

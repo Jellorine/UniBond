@@ -1,7 +1,13 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function Profile_topbar() {
+export default function Project_topbar() {
   return (
     <View style={styles.container}>
       {/* Back Button */}
@@ -10,35 +16,35 @@ export default function Profile_topbar() {
       </TouchableOpacity> */}
 
       {/* Title */}
-      <Text style={styles.title}>Aathif Ahamed</Text> {/*name have to change dynamically*/}
+      <Text style={styles.title}>Projects</Text>
 
-      {/* Setting Button */}
-      <TouchableOpacity style={styles.button} onPress={() => alert('Setting Button Pressed')}>
-        <Ionicons name="settings-outline" size={24} color="black" />
-      </TouchableOpacity>
+      {/* Right Button
+      <TouchableOpacity style={styles.button} onPress={() => alert('Right Button Pressed')}>
+        <Ionicons name="ellipsis-horizontal" size={24} color="black" />
+      </TouchableOpacity> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     height: 60,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   button: {
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     flex: 1,
   },
 });

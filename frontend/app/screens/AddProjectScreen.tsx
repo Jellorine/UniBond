@@ -30,7 +30,6 @@ const AddProjectScreen = () => {
   const [location, setLocation] = useState("");
   const [projectStatus, setProjectStatus] = useState("");
 
-
   const handleInputChange = (
     setter: React.Dispatch<React.SetStateAction<any>>,
     setterName: string
@@ -63,7 +62,15 @@ const AddProjectScreen = () => {
   }, [hasChanges, navigation]);
 
   const handleProjectSubmit = async () => {
-    if (!projectTitle || !projectDescription || !timeline || !paymentDetails || !skills || !location || !projectStatus) {
+    if (
+      !projectTitle ||
+      !projectDescription ||
+      !timeline ||
+      !paymentDetails ||
+      !skills ||
+      !location ||
+      !projectStatus
+    ) {
       alert("Please fill in all required fields!");
       return;
     }
@@ -138,68 +145,71 @@ const AddProjectScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-        <Ionicons name="close" size={24} color="black" />
-      </TouchableOpacity>
-      <Text style={styles.label}>Post a Project</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Project Title"
-        value={projectTitle}
-        onChangeText={handleInputChange(setProjectTitle, "projectTitle")}
-      />
-      <TextInput
-        style={[styles.input, { height: 100 }]}
-        multiline
-        placeholder="Project Description"
-        value={projectDescription}
-        onChangeText={handleInputChange(
-          setProjectDescription,
-          "projectDescription"
-        )}
-      />
-      {/* <TextInput
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+          <Ionicons name="close" size={24} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.label}>Post a Project</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Project Title"
+          value={projectTitle}
+          onChangeText={handleInputChange(setProjectTitle, "projectTitle")}
+        />
+        <TextInput
+          style={[styles.input, { height: 100 }]}
+          multiline
+          placeholder="Project Description"
+          value={projectDescription}
+          onChangeText={handleInputChange(
+            setProjectDescription,
+            "projectDescription"
+          )}
+        />
+        {/* <TextInput
         style={styles.input}
         placeholder="Technologies (comma-separated)"
         value={technologies}
         onChangeText={handleInputChange(setTechnologies, "technologies")}
       /> */}
-      <TextInput
-        style={styles.input}
-        placeholder="Timeline"
-        value={timeline}
-        onChangeText={handleInputChange(setTimeline, "timeline")}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Payment Details"
-        value={paymentDetails}
-        onChangeText={handleInputChange(setPaymentDetails, "paymentDetails")}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Skills (comma-separated)"
-        value={skills}
-        onChangeText={handleInputChange(setSkills, "skills")}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Location"
-        value={location}
-        onChangeText={handleInputChange(setLocation, "location")}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Project Status (e.g., Open, In Progress, Completed)"
-        value={projectStatus}
-        onChangeText={handleInputChange(setProjectStatus, "projectStatus")}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Timeline"
+          value={timeline}
+          onChangeText={handleInputChange(setTimeline, "timeline")}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Payment Details"
+          value={paymentDetails}
+          onChangeText={handleInputChange(setPaymentDetails, "paymentDetails")}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Skills (comma-separated)"
+          value={skills}
+          onChangeText={handleInputChange(setSkills, "skills")}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Location"
+          value={location}
+          onChangeText={handleInputChange(setLocation, "location")}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Project Status (e.g., Open, In Progress, Completed)"
+          value={projectStatus}
+          onChangeText={handleInputChange(setProjectStatus, "projectStatus")}
+        />
 
-      <TouchableOpacity style={styles.postButton} onPress={handleProjectSubmit}>
-        <Text style={styles.postButtonText}>Post Project</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity
+          style={styles.postButton}
+          onPress={handleProjectSubmit}
+        >
+          <Text style={styles.postButtonText}>Post Project</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
