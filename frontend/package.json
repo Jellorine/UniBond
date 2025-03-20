@@ -24,11 +24,14 @@
     "@react-navigation/bottom-tabs": "^7.0.0",
     "@react-navigation/native": "^7.0.0",
     "@react-navigation/stack": "^7.1.1",
+    "@rneui/base": "^4.0.0-rc.8",
     "@rneui/themed": "^4.0.0-rc.8",
     "@stream-io/flat-list-mvcp": "^0.10.3",
     "@supabase/realtime-js": "^2.11.3",
     "@supabase/supabase-js": "^2.47.10",
     "@types/react-native": "^0.72.8",
+    "dayjs": "^1.11.13",
+    "dayjs-plugin-utc": "^0.1.2",
     "expo": "~52.0.11",
     "expo-auth-session": "~6.0.1",
     "expo-av": "~15.0.1",
@@ -73,7 +76,8 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.2",
     "stream-chat-expo": "^5.44.2",
-    "stream-chat-react-native": "^5.44.2"
+    "stream-chat-react-native": "^5.44.2",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

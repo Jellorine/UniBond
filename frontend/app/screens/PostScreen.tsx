@@ -9,6 +9,7 @@ import {
   BackHandler,
   Alert,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../providers/AuthProvider";
@@ -45,17 +46,60 @@ const PostScreen = () => {
     ? `${storageUrl}${profile.avatar_url}`
     : null;
 
+  //router.push("../(home)/(tabs)/Home");
+
+  const showDiscardAlert = (e?: any) => {
+    Alert.alert(
+      "Discard Changes?",
+      "Are you sure you want to leave without posting?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        {
+          text: "Leave",
+          onPress: () => {
+            router.push("../(home)/(tabs)/Home");
+            if (e) e.preventDefault();
+          },
+        },
+      ]
+    );
+  };
+
   useEffect(() => {
     const backAction = () => {
+      if (!showPreview) {
+        showDiscardAlert();
+        return true;
+      }
       router.push("../(home)/(tabs)/Home");
       return true;
     };
 
-    BackHandler.addEventListener("hardwareBackPress", backAction);
+    if (Platform.OS === "android") {
+      BackHandler.addEventListener("hardwareBackPress", backAction);
+    } else {
+      const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+        if (!showPreview) {
+          e.preventDefault();
+          showDiscardAlert(e);
+        } else {
+          router.push("../(home)/(tabs)/Home");
+        }
+      });
+
+      return () => unsubscribe();
+    }
+
     return () => {
-      BackHandler.removeEventListener("hardwareBackPress", backAction);
+      if (Platform.OS === "android") {
+        BackHandler.removeEventListener("hardwareBackPress", backAction);
+      }
     };
-  }, [navigation]);
+  }, [showPreview, navigation]);
 
   const uploadImage = async (uri) => {
     try {
