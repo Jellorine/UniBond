@@ -105,37 +105,37 @@ const JobCard: React.FC<JobCardProps> = ({
       <View style={styles.container} accessible={true} accessibilityLabel={`Job posting for ${title} at ${company}`}>
         <View style={styles.headerContainer}>
           <View style={styles.profileContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              router.push({
-                pathname: '/screens/ProfileScreen',
-                params: { userId: user_id },
-              });
-            }}
-            accessible={true}
-            accessibilityLabel={`View profile of ${full_name}`}
-            accessibilityRole="button"
-          >
-            {avatar_url && !avatarError ? (
-              <View>
-                {avatarLoading && <ActivityIndicator style={styles.loadingIndicator} />}
-                <Image
-                  source={{ uri: avatar_url }}
-                  style={[styles.avatar, avatarLoading && styles.hidden]}
-                  onLoad={() => setAvatarLoading(false)}
-                  onError={() => setAvatarError(true)}
-                />
-              </View>
-            ) : (
-              <Ionicons name="person-circle" size={40} color="gray" />
-            )}
+            <TouchableOpacity
+              onPress={() => {
+                router.push({
+                  pathname: '/screens/ProfileScreen',
+                  params: { userId: user_id },
+                });
+              }}
+              accessible={true}
+              accessibilityLabel={`View profile of ${full_name}`}
+              accessibilityRole="button"
+            >
+              {avatar_url && !avatarError ? (
+                <View>
+                  {avatarLoading && <ActivityIndicator style={styles.loadingIndicator} />}
+                  <Image
+                    source={{ uri: avatar_url }}
+                    style={[styles.avatar, avatarLoading && styles.hidden]}
+                    onLoad={() => setAvatarLoading(false)}
+                    onError={() => setAvatarError(true)}
+                  />
+                </View>
+              ) : (
+                <Ionicons name="person-circle" size={40} color="gray" />
+              )}
             </TouchableOpacity>
             <View>
               <Text style={styles.name}>{full_name}</Text>
               <Text style={styles.date}>{getRelativeTime(created_at)}</Text>
             </View>
-            </View>
-          
+          </View>
+
 
           {isOwner && (
             <TouchableOpacity
@@ -240,7 +240,14 @@ const JobCard: React.FC<JobCardProps> = ({
                     </TouchableOpacity>
                   )}
                   {job_website && (
-                    <TouchableOpacity style={styles.row} onPress={() => Linking.openURL(job_website)} accessibilityRole="link">
+                    <TouchableOpacity
+                      style={styles.row}
+                      onPress={() => {
+                        const fullUrl = job_website.startsWith('http') ? job_website : `https://${job_website}`;
+                        Linking.openURL(fullUrl);
+                      }}
+                      accessibilityRole="link"
+                    >
                       <MaterialIcons name="public" size={20} color="gray" />
                       <Text style={styles.detailText}>{truncateText(job_website, 30)}</Text>
                     </TouchableOpacity>

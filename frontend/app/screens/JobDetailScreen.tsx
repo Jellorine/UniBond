@@ -86,21 +86,23 @@ const JobDetailScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Cancel Button */}
-      <TouchableOpacity
-        onPress={() => router.push('/(tabs)/Jobs')} // Navigate back to the previous screen
-        style={styles.cancelButton}
-      >
-        <Ionicons name="close" size={24} color="#000" />
-      </TouchableOpacity>
+      {/* Container for Cancel and Share Buttons */}
+      <View style={styles.buttonContainer}>
+      {imageUrl && (
+          <TouchableOpacity onPress={shareImage} style={styles.shareButton}>
+            <Ionicons name="share-social" size={22} color="#000" />
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity
+          onPress={() => router.push('/(tabs)/Jobs')} // Navigate back to the previous screen
+          style={styles.cancelButton}
+        >
+          <Ionicons name="close" size={24} color="#000" />
+        </TouchableOpacity>
 
-      {/* Share image Button */}
-      <TouchableOpacity
-        onPress={shareImage}
-        style={styles.shareButton}
-      >
-        <Ionicons name="share-social" size={24} color="#000" />
-      </TouchableOpacity>
+      </View>
+
+
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Job Title and Company */}
@@ -176,7 +178,11 @@ const JobDetailScreen = () => {
               <Text style={styles.detailLabel}>Website:</Text>
               <Text
                 style={[styles.detailText, styles.link]}
-                onPress={() => Linking.openURL(job.job_website)}
+                onPress={() =>{
+                  const fullUrl = job.job_website.startsWith('http') ? job.job_website : `https://${job.job_website}`;
+                  Linking.openURL(fullUrl);
+                }
+                }
               >
                 {job.job_website}
               </Text>
@@ -286,20 +292,21 @@ const styles = StyleSheet.create({
     color: '#333',
     lineHeight: 24,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    backgroundColor: '#fff',
+  },
   cancelButton: {
-    position: 'absolute',
-    top: 60,
-    right: 20,
-    zIndex: 1, // Ensure the button is above other content
     padding: 8,
     backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent background
     borderRadius: 20,
   },
   shareButton: {
-    position: 'absolute',
-    top: 60,
-    right: 70, // Adjust position to avoid overlapping with the cancel button
-    zIndex: 1,
+    marginRight: 16, // Add spacing between buttons
     padding: 8,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 20,
