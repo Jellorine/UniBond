@@ -280,7 +280,12 @@ const JobCard: React.FC<JobCardProps> = ({
                   {job_website && (
                     <TouchableOpacity
                       style={styles.row}
-                      onPress={() => Linking.openURL(job_website)}
+                      onPress={() => {
+                        const fullUrl = job_website.startsWith("http")
+                          ? job_website
+                          : `https://${job_website}`;
+                        Linking.openURL(fullUrl);
+                      }}
                       accessibilityRole="link"
                     >
                       <MaterialIcons name="public" size={20} color="gray" />
