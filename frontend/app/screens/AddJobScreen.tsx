@@ -9,19 +9,23 @@ import {
   Image,
   SafeAreaView,
   ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  BackHandler,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { useNavigation } from "@react-navigation/native";
+
+import { useRouter, useFocusEffect } from "expo-router";
 import { useAuth } from "../providers/AuthProvider";
 import { supabase } from "../lib/supabse";
 
 const AddJobScreen = () => {
   const { user } = useAuth();
-  const navigation = useNavigation();
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [company, setCompany] = useState("");
   const [location, setLocation] = useState("");
@@ -35,11 +39,67 @@ const AddJobScreen = () => {
   const [media, setMedia] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const hasUnsavedChanges = () => {
+    return (
+      title.trim() !== "" ||
+      company.trim() !== "" ||
+      location.trim() !== "" ||
+      type.trim() !== "" ||
+      skills.trim() !== "" ||
+      deadline.trim() !== "" ||
+      jobPhone.trim() !== "" ||
+      jobEmail.trim() !== "" ||
+      jobWebsite.trim() !== "" ||
+      description.trim() !== "" ||
+      media !== null
+    );
+  };
+
+  // Handle back button press (hardware or cancel button)
+  const onBackPress = () => {
+    if (hasUnsavedChanges()) {
+      Alert.alert(
+        "Are you sure?",
+        "You have unsaved changes. Are you sure you want to leave?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Leave",
+            style: "destructive",
+            onPress: () => router.back(),
+          },
+        ]
+      );
+      return true; // Prevent default behavior (going back)
+    } else {
+      router.back();
+      return false; // Allow default behavior (going back)
+    }
+  };
+
+  // Add event listener for hardware back button
+  useFocusEffect(
+    React.useCallback(() => {
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+      };
+    }, [onBackPress])
+  );
+
   // Media picker for image selection
   const handleMediaPicker = useCallback(async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
-      Alert.alert("Permission Required", "You need to allow access to your media library.");
+      Alert.alert(
+        "Permission Required",
+        "You need to allow access to your media library."
+      );
       return;
     }
 
@@ -84,7 +144,10 @@ const AddJobScreen = () => {
     }
 
     if (jobEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(jobEmail)) {
-      Alert.alert("Error", "Please enter a valid email. ex-: www.example@gmail.com");
+      Alert.alert(
+        "Error",
+        "Please enter a valid email. ex-: www.example@gmail.com"
+      );
       return;
     }
 
@@ -131,139 +194,173 @@ const AddJobScreen = () => {
       if (error) throw new Error(error.message);
 
       Alert.alert("Success", "Job posted successfully!");
-      navigation.goBack();
+      router.push("/(tabs)/Jobs");
     } catch (error: any) {
       Alert.alert("Error", error.message);
       console.error("Job submission error:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [title, company, location, type, skills, deadline, jobPhone, jobEmail, jobWebsite, description, media, user, navigation]);
-
-
+  }, [
+    title,
+    company,
+    location,
+    type,
+    skills,
+    deadline,
+    jobPhone,
+    jobEmail,
+    jobWebsite,
+    description,
+    media,
+    user,
+  ]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.flexContainer} >
-        
+    <TouchableWithoutFeedback
+      onPress={() => Keyboard.dismiss()} // Dismiss keyboard if open}
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.flexContainer}
+        >
           <View style={styles.container}>
-            {isLoading && <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />}
-            <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-            <Text style={styles.title}>Post a Job</Text>
-
-            <TouchableOpacity onPress={()=>navigation.goBack()} style={styles.cancelButton}>
-              <Ionicons name="close" size={24} color="#000" />
-            </TouchableOpacity>
-
-            {media && (
-              <View style={styles.imagePreviewContainer}>
-                <Image source={{ uri: media }} style={styles.imagePreview} />
-                <TouchableOpacity style={styles.closeButton} onPress={() => setMedia(null)}>
-                  <Ionicons name="close-circle" size={24} color="red" />
-                </TouchableOpacity>
-              </View>
+            {isLoading && (
+              <ActivityIndicator
+                size="large"
+                color="#0000ff"
+                style={styles.loadingIndicator}
+              />
             )}
+            <ScrollView
+              contentContainerStyle={styles.scrollContainer}
+              keyboardShouldPersistTaps="handled"
+            >
+              <Text style={styles.title}>Post a Job</Text>
 
-            <TouchableOpacity style={styles.selectImage} onPress={handleMediaPicker}>
-              <Ionicons name="image-outline" size={24} />
-              <Text>Select Image</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={onBackPress}
+                style={styles.cancelButton}
+              >
+                <Ionicons name="close" size={24} color="#000" />
+              </TouchableOpacity>
 
+              {media && (
+                <View style={styles.imagePreviewContainer}>
+                  <Image source={{ uri: media }} style={styles.imagePreview} />
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setMedia(null)}
+                  >
+                    <Ionicons name="close-circle" size={24} color="red" />
+                  </TouchableOpacity>
+                </View>
+              )}
 
-            {/* <Text style={styles.label}>Job Title <Text style={styles.required}>*</Text> </Text> */}
-            <TextInput
-              style={styles.input}
-              placeholder="Title (*required)"
-              placeholderTextColor="#E53935" // Light gray
-              value={title}
-              onChangeText={setTitle}
-            />
-            {/* <Text style={styles.label}>Company <Text style={styles.required}>*</Text> </Text> */}
-            <TextInput
-              style={styles.input}
-              placeholder="Company (*required)"
-              placeholderTextColor="#E53935" // Light gray
-              value={company}
-              onChangeText={setCompany}
-            />
-            {/* <Text style={styles.label}>Location</Text> */}
-            <TextInput
-              style={styles.input}
-              placeholder="Location"
-              placeholderTextColor="#888" // Light gray
-              value={location}
-              onChangeText={setLocation}
-            />
-            {/* <Text style={styles.label}>Job Type</Text> */}
-            <TextInput
-              style={styles.input}
-              placeholder="Job Type (e.g., Full-time / online)"
-              placeholderTextColor="#888" // Light gray
-              value={type}
-              onChangeText={setType}
-            />
-            {/* <Text style={styles.label}>Skills</Text> */}
-            <TextInput
-              style={styles.input}
-              placeholder="Skills (comma separated)"
-              placeholderTextColor="#888" // Light gray
-              value={skills}
-              onChangeText={setSkills}
-            />
-            {/* <Text style={styles.label}>Application Deadline</Text> */}
-            <TextInput
-              style={styles.input}
-              placeholder="Application Deadline (y-m-d)"
-              placeholderTextColor="#888" // Light gray
-              value={deadline}
-              onChangeText={setDeadline}
-            />
-            {/* <Text style={styles.label}>Phone</Text> */}
-            <TextInput
-              style={styles.input}
-              placeholder="Phone"
-              placeholderTextColor="#888" // Light gray
-              value={jobPhone}
-              onChangeText={setJobPhone}
-            />
-            {/* <Text style={styles.label}>Email</Text> */}
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="#888" // Light gray
-              value={jobEmail}
-              onChangeText={setJobEmail}
-            />
-            {/* <Text style={styles.label}>Website</Text> */}
-            <TextInput
-              style={styles.input}
-              placeholder="Website"
-              placeholderTextColor="#888" // Light gray
-              value={jobWebsite}
-              onChangeText={setJobWebsite}
-            />
-            {/* <Text style={styles.label}>Job Description</Text> */}
-            <TextInput
-              style={[styles.input, styles.descriptionInput]}
-              placeholder="Additional information"
-              placeholderTextColor="#888" // Light gray
-              value={description}
-              onChangeText={setDescription}
-              multiline={true}  // Enables multiline input
-              numberOfLines={4}  // Sets default height (optional)
-              textAlignVertical="top"  // Aligns text to the top
-            />
+              <TouchableOpacity
+                style={styles.selectImage}
+                onPress={handleMediaPicker}
+              >
+                <Ionicons name="image-outline" size={24} />
+                <Text>Select Image</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.postButton} onPress={handleJobSubmit}>
-              <Text style={styles.postButtonText}>Post Job</Text>
-            </TouchableOpacity>
+              {/* <Text style={styles.label}>Job Title <Text style={styles.required}>*</Text> </Text> */}
+              <TextInput
+                style={styles.input}
+                placeholder="Job Title *"
+                placeholderTextColor="#E53935" // red
+                value={title}
+                onChangeText={setTitle}
+              />
+              {/* <Text style={styles.label}>Company <Text style={styles.required}>*</Text> </Text> */}
+              <TextInput
+                style={styles.input}
+                placeholder="Company *"
+                placeholderTextColor="#E53935" // red
+                value={company}
+                onChangeText={setCompany}
+              />
+              {/* <Text style={styles.label}>Location</Text> */}
+              <TextInput
+                style={styles.input}
+                placeholder="Location"
+                placeholderTextColor="#888" // Light gray
+                value={location}
+                onChangeText={setLocation}
+              />
+              {/* <Text style={styles.label}>Job Type</Text> */}
+              <TextInput
+                style={styles.input}
+                placeholder="Job Type (e.g., Full-time / online)"
+                placeholderTextColor="#888" // Light gray
+                value={type}
+                onChangeText={setType}
+              />
+              {/* <Text style={styles.label}>Skills</Text> */}
+              <TextInput
+                style={styles.input}
+                placeholder="Skills (comma separated)"
+                placeholderTextColor="#888" // Light gray
+                value={skills}
+                onChangeText={setSkills}
+              />
+              {/* <Text style={styles.label}>Application Deadline</Text> */}
+              <TextInput
+                style={styles.input}
+                placeholder="Application Deadline (y-m-d)"
+                placeholderTextColor="#888" // Light gray
+                value={deadline}
+                onChangeText={setDeadline}
+              />
+              {/* <Text style={styles.label}>Phone</Text> */}
+              <TextInput
+                style={styles.input}
+                placeholder="Phone"
+                placeholderTextColor="#888" // Light gray
+                value={jobPhone}
+                onChangeText={setJobPhone}
+              />
+              {/* <Text style={styles.label}>Email</Text> */}
+              <TextInput
+                style={styles.input}
+                placeholder="Email"
+                placeholderTextColor="#888" // Light gray
+                value={jobEmail}
+                onChangeText={setJobEmail}
+              />
+              {/* <Text style={styles.label}>Website</Text> */}
+              <TextInput
+                style={styles.input}
+                placeholder="Website"
+                placeholderTextColor="#888" // Light gray
+                value={jobWebsite}
+                onChangeText={setJobWebsite}
+              />
+              {/* <Text style={styles.label}>Job Description</Text> */}
+              <TextInput
+                style={[styles.input, styles.descriptionInput]}
+                placeholder="Additional information"
+                placeholderTextColor="#888" // Light gray
+                value={description}
+                onChangeText={setDescription}
+                multiline={true} // Enables multiline input
+                numberOfLines={4} // Sets default height (optional)
+                textAlignVertical="top" // Aligns text to the top
+              />
 
+              <TouchableOpacity
+                style={styles.postButton}
+                onPress={handleJobSubmit}
+              >
+                <Text style={styles.postButtonText}>Post Job</Text>
+              </TouchableOpacity>
             </ScrollView>
           </View>
-        
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -294,11 +391,11 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     position: "absolute",
-    top: 10,
+    top: 2,
     right: 10,
     zIndex: 1,
   },
-  selectImage:{
+  selectImage: {
     marginBottom: 20,
   },
   label: {
@@ -319,7 +416,7 @@ const styles = StyleSheet.create({
   },
   descriptionInput: {
     height: 120,
-    textAlignVertical: "top",  // Ensures text starts from the top
+    textAlignVertical: "top", // Ensures text starts from the top
   },
   imagePreviewContainer: {
     position: "relative",
@@ -327,7 +424,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   imagePreview: {
-    width: '80%',
+    width: "80%",
     aspectRatio: 1,
     borderRadius: 5,
   },

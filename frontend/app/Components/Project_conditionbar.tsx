@@ -11,9 +11,9 @@ export default function ProjectConditionBar() {
   const [activeTab, setActiveTab] = useState<string>("Available");
 
   return (
-    <View>
+    <View style={styles.container}>
       {/* Tab Navigation */}
-      <View style={styles.container}>
+      <View style={styles.tabContainer}>
         {TABS.map((tab) => (
           <TouchableOpacity
             key={tab}
@@ -27,13 +27,15 @@ export default function ProjectConditionBar() {
                 tab === "Available"
                   ? "person"
                   : tab === "Saved"
-                  ? "bookmark"
-                  : "time"
+                    ? "bookmark"
+                    : "time"
               }
               size={24}
               color={activeTab === tab ? "#2C3036" : "#8E8E93"}
             />
-            <Text style={[styles.tabText, activeTab === tab && styles.activeText]}>
+            <Text
+              style={[styles.tabText, activeTab === tab && styles.activeText]}
+            >
               {tab}
             </Text>
           </TouchableOpacity>
@@ -43,8 +45,8 @@ export default function ProjectConditionBar() {
       {/* Display Content Based on Active Tab */}
       <View style={styles.content}>
         {activeTab === "Available" && <Project_titlebox />}
-        {activeTab === "Saved" && <Saved_project  />}
-        {activeTab === "Status" && <Project_status/>}
+        {activeTab === "Saved" && <Saved_project />}
+        {activeTab === "Status" && <Project_status />}
       </View>
     </View>
   );
@@ -52,38 +54,39 @@ export default function ProjectConditionBar() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  tabContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: 12,
     backgroundColor: "#f9f9f9",
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
   },
   tab: {
     alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
   activeTab: {
-    backgroundColor: "#dcdcdc",
-    borderRadius: 15,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    backgroundColor: "#fff",
   },
   tabText: {
-    fontSize: 12,
+    fontSize: 14,
     color: "#8E8E93",
     marginTop: 5,
+    fontWeight: "500",
   },
   activeText: {
     color: "#2C3036",
     fontWeight: "bold",
   },
   content: {
-    marginTop: 20,
+    flex: 1,
     paddingHorizontal: 16,
-  },
-  message: {
-    fontSize: 16,
-    color: "gray",
-    textAlign: "center",
-    marginTop: 20,
+    paddingTop: 20,
   },
 });

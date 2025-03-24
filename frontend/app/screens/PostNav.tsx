@@ -5,6 +5,8 @@ import AddPostScreen from "./AddPostScreen";
 import AddEventScreen from "./AddEventScreen";
 import AddJobScreen from "./AddJobScreen";
 import AddProjectScreen from "./AddProjectScreen";
+import EditJobScreen from "./EditJobScreen";
+import JobDetailScreen from "./JobDetailScreen";
 
 export type PostStackParamList = {
   PostScreen: { content?: string; imageUri?: string | null };
@@ -12,6 +14,8 @@ export type PostStackParamList = {
   AddEventScreen: undefined;
   AddJobScreen: undefined;
   AddProjectScreen: undefined;
+  EditJobScreen: undefined;
+  JobDetailScreen: undefined;
 };
 
 const Stack = createStackNavigator<PostStackParamList>();
@@ -24,6 +28,8 @@ const PostNav = () => {
       <Stack.Screen name="AddEventScreen" component={AddEventScreen} />
       <Stack.Screen name="AddJobScreen" component={AddJobScreen} />
       <Stack.Screen name="AddProjectScreen" component={AddProjectScreen} />
+      <Stack.Screen name="EditJobScreen" component={EditJobScreen} />
+      <Stack.Screen name="JobDetailScreen" component={JobDetailScreen} />
     </Stack.Navigator>
   );
 };
