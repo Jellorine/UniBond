@@ -13,7 +13,13 @@ import { supabase } from "../lib/supabse"; // Adjust path as needed
 
 const NotificationScreen = () => {
   const [notifications, setNotifications] = useState<
-    { id: string; user_id: string; follower_id: string; message: string; created_at: string }[]
+    {
+      id: string;
+      user_id: string;
+      follower_id: string;
+      message: string;
+      created_at: string;
+    }[]
   >([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
@@ -49,7 +55,10 @@ const NotificationScreen = () => {
 
   // Remove notification from Supabase
   const handleRemoveNotification = async (id: string) => {
-    const { error } = await supabase.from("notifications").delete().eq("id", id);
+    const { error } = await supabase
+      .from("notifications")
+      .delete()
+      .eq("id", id);
     if (error) {
       console.error("Error deleting notification:", error);
     } else {
@@ -98,7 +107,13 @@ const NotificationScreen = () => {
   const renderNotification = ({
     item,
   }: {
-    item: { id: string; user_id: string; follower_id: string; message: string; created_at: string };
+    item: {
+      id: string;
+      user_id: string;
+      follower_id: string;
+      message: string;
+      created_at: string;
+    };
   }) => {
     return (
       <View style={styles.notification}>

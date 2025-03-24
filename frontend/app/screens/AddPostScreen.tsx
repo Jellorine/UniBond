@@ -80,45 +80,45 @@ const AddPostScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Create Post</Text>
-      </View>
-
-      {/* Input Field */}
-      <TextInput
-        style={styles.input}
-        placeholder="What's on your mind?"
-        value={content}
-        onChangeText={setContent}
-        multiline
-      />
-
-      {/* Image Picker */}
-      <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-        <MaterialIcons name="image" size={30} color="#000" />
-        <Text style={styles.imageText}>Add an image</Text>
-      </TouchableOpacity>
-
-      {/* Image Preview */}
-      {imageUri && (
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: imageUri }} style={styles.imagePreview} />
-          <TouchableOpacity
-            style={styles.removeImageButton}
-            onPress={() => setImageUri(null)}
-          >
-            <MaterialIcons name="close" size={24} color="#fff" />
-          </TouchableOpacity>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Create Post</Text>
         </View>
-      )}
 
-      {/* Post Button */}
-      <TouchableOpacity style={styles.postButton} onPress={handlePost}>
-        <Text style={styles.postButtonText}>Post</Text>
-      </TouchableOpacity>
-    </View>
+        {/* Input Field */}
+        <TextInput
+          style={styles.input}
+          placeholder="What's on your mind?"
+          value={content}
+          onChangeText={setContent}
+          multiline
+        />
+
+        {/* Image Picker */}
+        <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+          <MaterialIcons name="image" size={30} color="#000" />
+          <Text style={styles.imageText}>Add an image</Text>
+        </TouchableOpacity>
+
+        {/* Image Preview */}
+        {imageUri && (
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+            <TouchableOpacity
+              style={styles.removeImageButton}
+              onPress={() => setImageUri(null)}
+            >
+              <MaterialIcons name="close" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Post Button */}
+        <TouchableOpacity style={styles.postButton} onPress={handlePost}>
+          <Text style={styles.postButtonText}>Post</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };

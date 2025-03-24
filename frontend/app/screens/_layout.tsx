@@ -81,6 +81,18 @@ const Layout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="EditJobScreen"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="JobDetailScreen"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };

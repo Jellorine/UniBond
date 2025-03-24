@@ -57,26 +57,26 @@ const Search = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <SearchBar placeholder="Search here..." onSearch={handleSearch} />
-      <FlatList
-        data={searchResults}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.resultItem}
-            onPress={() => handleUserPress(item)}
-          >
-            <Text>{item.username}</Text>
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={<Text>No results found</Text>}
-        keyboardShouldPersistTaps="handled"
-      />
-    </KeyboardAvoidingView>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <SearchBar placeholder="Search here..." onSearch={handleSearch} />
+        <FlatList
+          data={searchResults}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.resultItem}
+              onPress={() => handleUserPress(item)}
+            >
+              <Text>{item.username}</Text>
+            </TouchableOpacity>
+          )}
+          ListEmptyComponent={<Text>No results found</Text>}
+          keyboardShouldPersistTaps="handled"
+        />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

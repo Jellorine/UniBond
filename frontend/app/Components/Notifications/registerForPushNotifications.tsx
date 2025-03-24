@@ -27,7 +27,9 @@ export async function registerForPushNotifications(userId: string) {
   if (token) {
     const { error } = await supabase
       .from("user_push_tokens") // Ensure this table exists
-      .upsert([{ user_id: userId, expo_push_token: token }], { onConflict: ["user_id"] });
+      .upsert([{ user_id: userId, expo_push_token: token }], {
+        onConflict: ["user_id"],
+      });
 
     if (error) {
       console.error("Error saving push token:", error);

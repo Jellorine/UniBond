@@ -51,7 +51,7 @@ type Event = {
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
-  const { session } = useAuth();
+  const { session, profile } = useAuth();
   const [username, setUsername] = useState<string>("");
   const [combinedData, setCombinedData] = useState<(Post | Event)[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -63,6 +63,10 @@ const HomeScreen: React.FC = () => {
   );
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [refreshKey, setRefreshKey] = useState(0);
+  const [likeCount, setLikeCount] = useState<number>(0);
+  const [hasLiked, setHasLiked] = useState<boolean>(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState<string>("");
 
   useEffect(() => {
     if (session) {
@@ -301,7 +305,7 @@ const HomeScreen: React.FC = () => {
           {/* Post Content */}
           <PostItem
             post={post}
-            username={post.username}
+            username={username}
             avatarUrl={imageUrl}
             postedDate={post.posted_date}
             postDuration={calculatePostDuration(post.posted_date)}
@@ -422,64 +426,65 @@ const HomeScreen: React.FC = () => {
     }
   };
 
-  const handleLike = async (postId: number) => {
+  const handleLike = async (postId: string, hasLiked: boolean) => {
     try {
-      const post = combinedData.find(
+      // Find the post in combinedData
+      const postIndex = combinedData.findIndex(
         (item) => item.type === "post" && item.id === postId
-      ) as Post;
+      );
 
-      if (!post) throw new Error("Post not found");
+      if (postIndex === -1) throw new Error("Post not found");
 
-      const isLiked = post.likes > 0;
-      const newLikes = isLiked ? post.likes - 1 : post.likes + 1;
+      // Update like count
+      const updatedLikeCount = hasLiked
+        ? combinedData[postIndex].likes - 1
+        : combinedData[postIndex].likes + 1;
 
-      const { error } = await supabase
+      // Update the like count in the database
+      const { error: updateError } = await supabase
         .from("posts")
-        .update({ likes: newLikes })
+        .update({ likes: updatedLikeCount })
         .eq("id", postId);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
 
-      setCombinedData((prev) =>
-        prev.map((item) =>
-          item.type === "post" && item.id === postId
-            ? { ...item, likes: newLikes }
-            : item
-        )
-      );
+      // Update combinedData to persist the like state
+      combinedData[postIndex] = {
+        ...combinedData[postIndex],
+        likes: updatedLikeCount,
+      };
+
+      // Ensure the UI re-renders with the updated data
+      setCombinedData([...combinedData]);
     } catch (error) {
-      console.error("Error toggling like:", error);
-      Alert.alert("Error", "Could not toggle like.");
+      console.error("Error updating like:", error);
     }
   };
 
-  const handleCommentSubmit = async (postId: number, newComment: string) => {
-    try {
-      setCombinedData((prev) =>
-        prev.map((item) =>
-          item.type === "post" && item.id === postId
-            ? {
-                ...item,
-                comments: [...item.comments, { username, comment: newComment }],
-              }
-            : item
-        )
-      );
+  const handleCommentSubmit = async (postId: string, commentText: string) => {
+    if (!commentText.trim()) {
+      alert("Please enter a comment!");
+      return;
+    }
 
-      const { error } = await supabase
-        .from("posts")
-        .update({
-          comments: [
-            ...(combinedData.find((p) => p.id === postId) as Post).comments,
-            { username, comment: newComment },
-          ],
-        })
-        .eq("id", postId);
+    try {
+      // Insert new comment into the database
+      const { data, error } = await supabase.from("comments").insert([
+        {
+          post_id: postId,
+          comment: commentText,
+          user_id: userId,
+          timestamp: new Date(),
+        },
+      ]);
 
       if (error) throw error;
+
+      // Update the UI by adding the new comment
+      setComments((prevComments) => [...prevComments, data[0]]); // Assuming `data[0]` is the new comment
+      setNewComment(""); // Reset the input field after submission
     } catch (error) {
-      console.error("Error adding comment:", error);
-      Alert.alert("Error", "Could not add the comment.");
+      console.error("Error submitting comment:", error);
     }
   };
 

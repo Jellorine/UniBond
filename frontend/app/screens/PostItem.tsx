@@ -1,56 +1,46 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  KeyboardAvoidingView,
-  FlatList,
-  Animated,
-  Image,
-} from "react-native";
+import { View, Text, TouchableOpacity, Image, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { supabase } from "../lib/supabse"; // Import the Supabase client
+import { supabase } from "../lib/supabse";
+import CommentSection from "../Components/CommentSection";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const PostItem = ({ post, username, onLike, onCommentSubmit }) => {
-  const [newComment, setNewComment] = useState("");
-  const [showComments, setShowComments] = useState(false);
+const PostItem = ({
+  post,
+  username,
+  onLike,
+  onCommentSubmit,
+  onLikeComment,
+  onDeleteComment,
+}) => {
   const [hasLiked, setHasLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const bounceAnim = new Animated.Value(1);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const postImageSize = 300;
-
+  const postImageSize = 260;
 
   useEffect(() => {
     if (post.media_url) {
       fetchImageUrl(post.media_url);
     }
+
+    const checkIfLiked = async () => {
+      const likedStatus = await AsyncStorage.getItem(`liked-${post.id}`);
+      if (likedStatus === "true") {
+        setHasLiked(true);
+      }
+    };
+
+    checkIfLiked();
   }, [post.media_url]);
 
-  // Fetch the image URL directly from Supabase Storage
+  // Fetch the image URL from Supabase Storage
   const fetchImageUrl = async (filePath) => {
-
-    // const { data, error } = await supabase.storage
-    //   .from("post_images")
-    //   .getPublicUrl(filePath);
-
-    // if (error) {
-    //   console.error("Error fetching image:", error);
-    // } else {
-    //   setImageUrl(data.media_url);
-    //   console.log("test"+data.media_url)
-    // }
-
     try {
       const { data, error } = await supabase.storage
         .from("post_images")
         .download(filePath);
-      
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       const fr = new FileReader();
       fr.readAsDataURL(data);
@@ -58,36 +48,21 @@ const PostItem = ({ post, username, onLike, onCommentSubmit }) => {
         setImageUrl(fr.result as string);
       };
     } catch (error) {
-      if (error instanceof Error) {
-        console.log("Error downloading image: ", error.message);
-      }
+      console.error("Error downloading image:", error.message);
     }
   };
 
-
-  const handleCommentSubmit = () => {
-    if (!newComment.trim()) {
-      alert("Comment cannot be empty!");
-      return;
-    }
-
-    try {
-      onCommentSubmit(post.id, newComment);
-      setNewComment("");
-      setShowComments(false);
-    } catch (error) {
-      console.error("Error adding comment:", error);
-      alert("Failed to add comment. Please try again.");
-    }
-  };
-
-  const handleLikeToggle = () => {
+  // Handle Like Button Click
+  const handleLikeToggle = async () => {
     const newHasLiked = !hasLiked;
     const newLikeCount = newHasLiked ? likeCount + 1 : likeCount - 1;
 
     setHasLiked(newHasLiked);
     setLikeCount(newLikeCount);
 
+    await AsyncStorage.setItem(`liked-${post.id}`, newHasLiked.toString());
+
+    // Animation effect
     Animated.sequence([
       Animated.timing(bounceAnim, {
         toValue: 1.2,
@@ -107,93 +82,84 @@ const PostItem = ({ post, username, onLike, onCommentSubmit }) => {
       console.error("Error updating like count:", error);
       setHasLiked(!newHasLiked);
       setLikeCount(likeCount);
-      alert("Failed to update like. Please try again.");
     }
   };
- 
-
-  const storageUrl =
-  "https://jnqvgrycauzjnvepqorq.supabase.co/storage/v1/object/public/post_images//"; // Storage URL for post images
-
-
 
   return (
     <View style={styles.postContainer}>
-      {/* Display the content of the post */}
+      {/* Post Content */}
       <Text style={styles.postContent}>{post.content}</Text>
 
-      {/* Display the post image if media_url is present */}
+      {/* Post Image */}
       <View>
         {imageUrl ? (
           <Image
-            source={{ uri:imageUrl}}
-            style={[{ height: postImageSize, width: postImageSize }, styles.image]}
+            source={{ uri: imageUrl }}
+            style={[
+              { height: postImageSize, width: postImageSize },
+              styles.image,
+            ]}
             accessibilityLabel="Post Image"
           />
         ) : (
-
-          <View style={[{ height: postImageSize, width: postImageSize }, styles.noImage]}>
+          <View
+            style={[
+              { height: postImageSize, width: postImageSize },
+              styles.noImage,
+            ]}
+          >
             <Text style={styles.noImageText}>No Image</Text>
           </View>
         )}
       </View>
 
+      {/* Like & Comment Buttons */}
       <View style={styles.postActions}>
-        {/* Like button */}
-        <TouchableOpacity onPress={handleLikeToggle} style={styles.actionButton}>
+        {/* Like Post */}
+        <TouchableOpacity
+          onPress={handleLikeToggle}
+          style={styles.actionButton}
+        >
           <Animated.View style={{ transform: [{ scale: bounceAnim }] }}>
-            <Ionicons name="heart" size={24} color={hasLiked ? "red" : "gray"} />
+            <Ionicons
+              name="heart"
+              size={24}
+              color={hasLiked ? "red" : "gray"}
+            />
           </Animated.View>
           <Text>{likeCount}</Text>
         </TouchableOpacity>
 
-        {/* Comment button */}
-        <TouchableOpacity onPress={() => setShowComments(!showComments)} style={styles.actionButton}>
-          <Ionicons name="chatbubble" size={24} color="gray" />
-          <Text>{post.comments.length}</Text>
-        </TouchableOpacity>
+        {/* Comment Section */}
+        <CommentSection
+          postId={post.id}
+          comments={post.comments}
+          onCommentSubmit={onCommentSubmit}
+          onLikeComment={onLikeComment}
+          onDeleteComment={onDeleteComment}
+        />
       </View>
-
-      {/* Comments Section */}
-      {showComments && (
-        <View style={styles.commentsContainer}>
-          <FlatList
-            data={post.comments}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.comment}>
-                <Text style={styles.commentUsername}>{item.username}</Text>
-                <Text style={styles.commentText}>{item.comment}</Text>
-              </View>
-            )}
-          />
-
-          {/* New Comment Input */}
-          <KeyboardAvoidingView behavior="padding">
-            <TextInput
-              style={styles.commentInput}
-              placeholder="Write a comment..."
-              value={newComment}
-              onChangeText={setNewComment}
-              onSubmitEditing={handleCommentSubmit}
-            />
-          </KeyboardAvoidingView>
-        </View>
-      )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+export default PostItem;
+
+const styles = {
   postContainer: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 8,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   postContent: {
     fontSize: 16,
-    marginBottom: 8,
-    color: "#333",
+    marginBottom: 10,
   },
   image: {
     borderRadius: 8,
@@ -201,50 +167,21 @@ const styles = StyleSheet.create({
   },
   noImage: {
     backgroundColor: "#f0f0f0",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 8,
   },
   noImageText: {
     color: "#888",
-    fontSize: 14,
   },
   postActions: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 10,
   },
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 16,
+    marginRight: 15,
   },
-  commentsContainer: {
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  comment: {
-    marginBottom: 8,
-  },
-  commentUsername: {
-    fontWeight: "bold",
-    marginBottom: 4,
-    color: "#444",
-  },
-  commentText: {
-    fontSize: 14,
-    color: "#555",
-  },
-  commentInput: {
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 8,
-    backgroundColor: "#f9f9f9",
-  },
-});
-
-export default PostItem;
+};
