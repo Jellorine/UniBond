@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Alert,TouchableWithoutFeedback, Keyboard  } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Alert, TouchableWithoutFeedback, Keyboard, Linking } from 'react-native';
 import { Ionicons, MaterialIcons, Entypo } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
@@ -18,14 +18,12 @@ interface JobCardProps {
   full_name?: string;
   image_url: string | null;
   created_at: string;
-  expandedJobId: string | null;
   jobId: string;
   savedJobs: string[];
   onSaveJob: (jobId: string) => void;
-  toggleExpand: (id: string) => void;
   user_id: string;
   currentUserId?: string;
-  onDeleteJob?: (jobId: string,image_url: string | null) => void;
+  onDeleteJob?: (jobId: string, image_url: string | null) => void;
 }
 
 const JobCard: React.FC<JobCardProps> = ({
@@ -43,11 +41,9 @@ const JobCard: React.FC<JobCardProps> = ({
   full_name,
   image_url,
   created_at,
-  expandedJobId,
   jobId,
   savedJobs,
   onSaveJob,
-  toggleExpand,
   user_id,
   currentUserId,
   onDeleteJob,
@@ -75,7 +71,7 @@ const JobCard: React.FC<JobCardProps> = ({
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => onDeleteJob?.(jobId,image_url)
+          onPress: () => onDeleteJob?.(jobId, image_url)
         }
       ]
     );
@@ -101,181 +97,183 @@ const JobCard: React.FC<JobCardProps> = ({
 
   return (
     <TouchableWithoutFeedback
-    onPress={() => {
-      if (menuVisible) setMenuVisible(false);
-      Keyboard.dismiss(); // Dismiss keyboard if open
-    }}
-    accessible={false} // Ensures it doesn't interfere with screen readers
-  >
-    <View style={styles.container} accessible={true} accessibilityLabel={`Job posting for ${title} at ${company}`}>
-      <View style={styles.headerContainer}>
+      onPress={() => {
+        if (menuVisible) setMenuVisible(false);
+      }}
+      accessible={false} // Ensures it doesn't interfere with screen readers
+    >
+      <View style={styles.container} accessible={true} accessibilityLabel={`Job posting for ${title} at ${company}`}>
+        <View style={styles.headerContainer}>
+          <View style={styles.profileContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                router.push({
+                  pathname: '/screens/ProfileScreen',
+                  params: { userId: user_id },
+                });
+              }}
+              accessible={true}
+              accessibilityLabel={`View profile of ${full_name}`}
+              accessibilityRole="button"
+            >
+              {avatar_url && !avatarError ? (
+                <View>
+                  {avatarLoading && <ActivityIndicator style={styles.loadingIndicator} />}
+                  <Image
+                    source={{ uri: avatar_url }}
+                    style={[styles.avatar, avatarLoading && styles.hidden]}
+                    onLoad={() => setAvatarLoading(false)}
+                    onError={() => setAvatarError(true)}
+                  />
+                </View>
+              ) : (
+                <Ionicons name="person-circle" size={40} color="gray" />
+              )}
+            </TouchableOpacity>
+            <View>
+              <Text style={styles.name}>{full_name}</Text>
+              <Text style={styles.date}>{getRelativeTime(created_at)}</Text>
+            </View>
+          </View>
+
+
+          {isOwner && (
+            <TouchableOpacity
+              ref={menuRef}
+              onPress={() => setMenuVisible(!menuVisible)}
+              style={styles.menuButton}
+              accessible={true}
+              accessibilityLabel="More options"
+              accessibilityRole="button"
+            >
+              <Entypo name="dots-three-vertical" size={20} color="gray" />
+            </TouchableOpacity>
+          )}
+
+          {menuVisible && (
+            <View style={styles.menuContainer}>
+              {/* Edit Button */}
+              <TouchableOpacity
+                onPress={() => {
+                  setMenuVisible(false); // Close the menu
+                  router.push({
+                    pathname: '/screens/EditJobScreen', // Replace with your edit screen path
+                    params: { jobId: jobId }, // Pass the job ID to the edit screen
+                  });
+                }}
+                style={styles.menuItem}
+              >
+                <MaterialIcons name="edit" size={20} color="#007BFF" />
+                <Text style={[styles.menuItemText, { color: '#007BFF' }]}>Edit Job</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={handleDeleteJob} style={styles.menuItem}>
+                <MaterialIcons name="delete" size={20} color="red" />
+                <Text style={styles.menuItemText}>Delete Job</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
         <TouchableOpacity
-          style={styles.profileContainer}
           onPress={() => {
             router.push({
-              pathname: '/screens/ProfileScreen',
-              params: { userId: user_id },
+              pathname: '/screens/JobDetailScreen',
+              params: { jobId: jobId, image_url: image_url }, // Pass the job ID to the detail screen
             });
           }}
-          accessible={true}
-          accessibilityLabel={`View profile of ${full_name}`}
-          accessibilityRole="button"
         >
-          {avatar_url && !avatarError ? (
-            <View>
-              {avatarLoading && <ActivityIndicator style={styles.loadingIndicator} />}
-              <Image
-                source={{ uri: avatar_url }}
-                style={[styles.avatar, avatarLoading && styles.hidden]}
-                onLoad={() => setAvatarLoading(false)}
-                onError={() => setAvatarError(true)}
-              />
-            </View>
-          ) : (
-            <Ionicons name="person-circle" size={40} color="gray" />
-          )}
-          <View>
-            <Text style={styles.name}>{full_name}</Text>
-            <Text style={styles.date}>{getRelativeTime(created_at)}</Text>
-          </View>
-        </TouchableOpacity>
+          <View style={styles.card}>
+            <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{title}</Text>
+            {company && <Text style={styles.company}>at {company}</Text>}
 
-        {isOwner && (
-          <TouchableOpacity
-            ref={menuRef}
-            onPress={() => setMenuVisible(!menuVisible)}
-            style={styles.menuButton}
-            accessible={true}
-            accessibilityLabel="More options"
-            accessibilityRole="button"
-          >
-            <Entypo name="dots-three-vertical" size={20} color="gray" />
-          </TouchableOpacity>
-        )}
+            {image_url && !imageError && (
+              <View style={styles.imageContainer}>
+                {imageLoading && <ActivityIndicator style={styles.loadingIndicator} />}
+                <Image
+                  source={{ uri: image_url }}
+                  style={[styles.image, imageLoading && styles.hidden]}
+                  onLoad={() => setImageLoading(false)}
+                  onError={() => setImageError(true)}
+                />
+              </View>
+            )}
 
-        {menuVisible && (
-          <View style={styles.menuContainer}>
-            <TouchableOpacity onPress={handleDeleteJob} style={styles.menuItem}>
-              <MaterialIcons name="delete" size={20} color="red" />
-              <Text style={styles.menuItemText}>Delete Job</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{title}</Text>
-        {company && <Text style={styles.company}>at {company}</Text>}
-
-        {image_url && !imageError && (
-          <View style={styles.imageContainer}>
-            {imageLoading && <ActivityIndicator style={styles.loadingIndicator} />}
-            <Image
-              source={{ uri: image_url }}
-              style={[styles.image, imageLoading && styles.hidden]}
-              onLoad={() => setImageLoading(false)}
-              onError={() => setImageError(true)}
-            />
-          </View>
-        )}
-
-        <View style={styles.details}>
-          {location && (
-            <View style={styles.row}>
-              <MaterialIcons name="location-on" size={20} color="gray" />
-              <Text style={styles.detailText}>{location}</Text>
-            </View>
-          )}
-          {type && (
-            <View style={styles.row}>
-              <Ionicons name="briefcase-outline" size={20} color="gray" />
-              <Text style={styles.detailText}>{type}</Text>
-            </View>
-          )}
-          {skills && (
-            <View style={styles.row}>
-              <MaterialIcons name="article" size={20} color="gray" />
-              <Text style={styles.detailText}>{truncateText(skills, 100)}</Text>
-            </View>
-          )}
-          {deadline && (
-            <View style={styles.row}>
-              <MaterialIcons name="event" size={20} color="gray" />
-              <Text style={styles.detailText}>{deadline}</Text>
-            </View>
-          )}
-
-          {(job_phone || job_email || job_website) && (
-            <View>
-              {job_phone && (
-                <TouchableOpacity style={styles.row} accessibilityRole="link">
-                  <MaterialIcons name="phone" size={20} color="gray" />
-                  <Text style={styles.detailText}>{job_phone}</Text>
-                </TouchableOpacity>
+            <View style={styles.details}>
+              {location && (
+                <View style={styles.row}>
+                  <MaterialIcons name="location-on" size={20} color="gray" />
+                  <Text style={styles.detailText}>{location}</Text>
+                </View>
               )}
-              {job_email && (
-                <TouchableOpacity style={styles.row} accessibilityRole="link">
-                  <MaterialIcons name="email" size={20} color="gray" />
-                  <Text style={styles.detailText}>{job_email}</Text>
-                </TouchableOpacity>
+              {type && (
+                <View style={styles.row}>
+                  <Ionicons name="briefcase-outline" size={20} color="gray" />
+                  <Text style={styles.detailText}>{type}</Text>
+                </View>
               )}
-              {job_website && (
-                <TouchableOpacity style={styles.row} accessibilityRole="link">
-                  <MaterialIcons name="public" size={20} color="gray" />
-                  <Text style={styles.detailText}>{truncateText(job_website, 30)}</Text>
-                </TouchableOpacity>
+              {skills && (
+                <View style={styles.row}>
+                  <MaterialIcons name="article" size={20} color="gray" />
+                  <Text style={styles.detailText}>{truncateText(skills, 100)}</Text>
+                </View>
+              )}
+              {deadline && (
+                <View style={styles.row}>
+                  <MaterialIcons name="event" size={20} color="gray" />
+                  <Text style={styles.detailText}>{deadline}</Text>
+                </View>
+              )}
+
+              {(job_phone || job_email || job_website) && (
+                <View>
+                  {job_phone && (
+                    <TouchableOpacity style={styles.row} onPress={() => Linking.openURL(`tel:${job_phone}`)}>
+                      <MaterialIcons name="phone" size={20} color="gray" />
+                      <Text style={styles.detailText}>{job_phone}</Text>
+                    </TouchableOpacity>
+                  )}
+                  {job_email && (
+                    <TouchableOpacity style={styles.row} onPress={() => Linking.openURL(`mailto:${job_email}`)}>
+                      <MaterialIcons name="email" size={20} color="gray" />
+                      <Text style={styles.detailText}>{job_email}</Text>
+                    </TouchableOpacity>
+                  )}
+                  {job_website && (
+                    <TouchableOpacity
+                      style={styles.row}
+                      onPress={() => {
+                        const fullUrl = job_website.startsWith('http') ? job_website : `https://${job_website}`;
+                        Linking.openURL(fullUrl);
+                      }}
+                      accessibilityRole="link"
+                    >
+                      <MaterialIcons name="public" size={20} color="gray" />
+                      <Text style={styles.detailText}>{truncateText(job_website, 30)}</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               )}
             </View>
-          )}
-        </View>
 
-        {description && (
-          <View>
-            {expandedJobId === jobId ? (
-              <Text style={styles.description}>{description}</Text>
-            ) : (
+            <View style={styles.buttonGroup}>
               <TouchableOpacity
-                onPress={() => toggleExpand(jobId)}
-                style={styles.readMoreButton}
+                onPress={() => onSaveJob(jobId)}
+                style={styles.iconButton}
                 accessible={true}
-                accessibilityLabel="Read more about this job"
+                accessibilityLabel={savedJobs.includes(jobId) ? "Remove from saved jobs" : "Save this job"}
                 accessibilityRole="button"
               >
-                <Text style={styles.readMoreText}>Read More</Text>
+                <Ionicons
+                  name={savedJobs.includes(jobId) ? "bookmark" : "bookmark-outline"}
+                  size={30}
+                  color="#000"
+                />
               </TouchableOpacity>
-            )}
+            </View>
           </View>
-        )}
-
-        {expandedJobId === jobId && description && (
-          <TouchableOpacity
-            onPress={() => toggleExpand(jobId)}
-            style={styles.readMoreButton}
-            accessible={true}
-            accessibilityLabel="Show less content"
-            accessibilityRole="button"
-          >
-            <Text style={styles.readMoreText}>Read Less</Text>
-          </TouchableOpacity>
-        )}
-
-        <View style={styles.buttonGroup}>
-          <TouchableOpacity
-            onPress={() => onSaveJob(jobId)}
-            style={styles.iconButton}
-            accessible={true}
-            accessibilityLabel={savedJobs.includes(jobId) ? "Remove from saved jobs" : "Save this job"}
-            accessibilityRole="button"
-          >
-            <Ionicons
-              name={savedJobs.includes(jobId) ? "bookmark" : "bookmark-outline"}
-              size={30}
-              color="#000"
-            />
-          </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
       </View>
-    </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -396,18 +394,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 14,
     color: 'gray',
-  },
-  description: {
-    fontSize: 14,
-    color: 'gray',
-  },
-  readMoreButton: {
-    marginVertical: 8,
-    alignSelf: 'flex-start',
-  },
-  readMoreText: {
-    fontSize: 14,
-    color: '#007BFF',
   },
   buttonGroup: {
     flexDirection: "row",

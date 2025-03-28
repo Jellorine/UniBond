@@ -71,7 +71,7 @@ const PostScreen = () => {
 
   useEffect(() => {
     const backAction = () => {
-      if (!showPreview) {
+      if (showPreview) {
         showDiscardAlert();
         return true;
       }
