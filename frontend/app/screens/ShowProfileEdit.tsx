@@ -164,7 +164,7 @@ export default function ShowProfileEdit() {
       // Fetch posts
       const { data: postsData, error: postsError } = await supabase
         .from("posts")
-        .select("id, content, likes, comments, is_public, user_id")
+        .select("id, content, likes, comments, is_public, user_id,media_url",)
         .eq("user_id", profileId);
 
       if (postsData) {
