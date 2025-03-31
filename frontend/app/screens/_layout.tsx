@@ -9,6 +9,12 @@ const Layout = () => {
         }}
       />
       <Stack.Screen
+        name="NotificationScreen"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="AddPostScreen"
         options={{
           headerShown: false,
