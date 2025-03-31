@@ -19,6 +19,8 @@ import {
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import ShowingAvatar from "../Components/ShowingAvatar";
 import { Link, router, useLocalSearchParams } from "expo-router";
+import PostItem from "./PostItem";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function ProfileScreen() {
   const [fullname, setFullname] = useState("");
@@ -50,6 +52,7 @@ export default function ProfileScreen() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [jobtitle, setJobtitle] = useState([]);
   const [graduationyear, setgraduationyear] = useState();
+  const [selectedTab, setSelectedTab] = useState("posts");
 
   useEffect(() => {
     if (userId || session) {
@@ -106,13 +109,16 @@ export default function ProfileScreen() {
       const profileId = userId || session?.user?.id;
       if (!profileId) throw new Error("No user on the session!");
 
+      // Fetch posts with comments
       const { data: postsData, error: postsError } = await supabase
         .from("posts")
-        .select("*")
-        .eq("user_id", profileId);
+        .select(`*, comments(*)`)
+        .eq("user_id", profileId)
+        .order("created_at", { ascending: false });
 
       if (postsError) throw postsError;
 
+      // Fetch events with interest status
       const { data: eventsData, error: eventsError } = await supabase
         .from("events")
         .select("*")
@@ -272,10 +278,87 @@ export default function ProfileScreen() {
   }
 
   const renderPost = ({ item }) => (
-    <View style={styles.postContainer}>
-      <Text style={styles.postContent}>{item.content}</Text>
-      <Text style={styles.postLikes}>Likes: {item.likes}</Text>
-    </View>
+    <PostItem
+      post={item}
+      username={username}
+      onLike={async (postId, hasLiked) => {
+        try {
+          const { error } = await supabase
+            .from("posts")
+            .update({ likes: hasLiked ? item.likes + 1 : item.likes - 1 })
+            .eq("id", postId);
+
+          if (error) throw error;
+        } catch (error) {
+          console.error("Error updating like count:", error);
+        }
+      }}
+      onCommentSubmit={async (postId, commentText) => {
+        try {
+          const { data, error } = await supabase
+            .from("comments")
+            .insert([
+              {
+                post_id: postId,
+                user_id: session?.user?.id,
+                content: commentText,
+                username: username,
+              },
+            ])
+            .select();
+
+          if (error) throw error;
+
+          setPosts(prevPosts =>
+            prevPosts.map(post =>
+              post.id === postId
+                ? {
+                    ...post,
+                    comments: [...(post.comments || []), data[0]],
+                  }
+                : post
+            )
+          );
+        } catch (error) {
+          console.error("Error submitting comment:", error);
+        }
+      }}
+      onLikeComment={async (commentId, hasLiked) => {
+        try {
+          const { error } = await supabase
+            .from("comments")
+            .update({ likes: hasLiked ? item.likes + 1 : item.likes - 1 })
+            .eq("id", commentId);
+
+          if (error) throw error;
+        } catch (error) {
+          console.error("Error updating comment like:", error);
+        }
+      }}
+      onDeleteComment={async (postId, commentId) => {
+        try {
+          const { error } = await supabase
+            .from("comments")
+            .delete()
+            .eq("id", commentId);
+
+          if (error) throw error;
+
+          setPosts(prevPosts =>
+            prevPosts.map(post =>
+              post.id === postId
+                ? {
+                    ...post,
+                    comments: post.comments.filter(c => c.id !== commentId),
+                  }
+                : post
+            )
+          );
+        } catch (error) {
+          console.error("Error deleting comment:", error);
+        }
+      }}
+    />
   );
 
   const handleInterestToggle = async (eventId: number) => {
@@ -467,7 +550,9 @@ export default function ProfileScreen() {
   );
 
   return (
+    
     <SafeAreaView style={{ flex: 1 }}>
+     
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
         <TouchableOpacity
           style={{ position: "absolute", left: 0, top: 20 }}
@@ -675,35 +760,72 @@ export default function ProfileScreen() {
       {renderDropdown()}
       {isFollowing && (
         <>
-          <View style={{ marginTop: 30, marginHorizontal: 20 }}>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>Posts</Text>
-            <FlatList
-              data={posts}
-              renderItem={renderPost}
-              keyExtractor={(item) => item.id.toString()}
-              ListEmptyComponent={
-                <Text style={{ textAlign: "center", marginTop: 10 }}>
-                  No posts found.
-                </Text>
-              }
-            />
-          </View>
+        
+         {/* Filter Buttons */}
+      <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 20 }}>
+        <TouchableOpacity
+          onPress={() => setSelectedTab("posts")}
+          style={{
+            backgroundColor: selectedTab === "posts" ? "#2C3036" : "#ccc",
+            padding: 10,
+            borderRadius: 25,
+            marginHorizontal: 5,
+            flex: 1,
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: selectedTab === "posts" ? "#fff" : "#000" }}>Posts</Text>
+        </TouchableOpacity>
 
-          <View style={{ marginTop: 30, marginHorizontal: 20, flex: 1 }}>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>Events</Text>
-            <FlatList
-              data={events}
-              renderItem={renderEvent}
-              keyExtractor={(item) => item.id.toString()}
-              ListEmptyComponent={
-                <Text style={{ textAlign: "center", marginTop: 10 }}>
-                  No events found.
-                </Text>
-              }
-            />
-          </View>
+        <TouchableOpacity
+          onPress={() => setSelectedTab("events")}
+          style={{
+            backgroundColor: selectedTab === "events" ? "#2C3036" : "#ccc",
+            padding: 10,
+            borderRadius: 25,
+            marginHorizontal: 5,
+            flex: 1,
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: selectedTab === "events" ? "#fff" : "#000" }}>Events</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Show Posts when "posts" is selected */}
+      {selectedTab === "posts" && (
+        <View style={{ marginTop: 30, marginHorizontal: 20 }}>
+          <Text style={{ fontSize: 18, fontWeight: "bold" }}>Posts</Text>
+          <FlatList
+            data={posts}
+            renderItem={renderPost}
+            keyExtractor={(item) => item.id.toString()}
+            ListEmptyComponent={
+              <Text style={{ textAlign: "center", marginTop: 10 }}>No posts found.</Text>
+            }
+            contentContainerStyle={styles.combinedList}
+          />
+        </View>
+      )}
+
+      {/* Show Events when "events" is selected */}
+      {selectedTab === "events" && (
+        <View style={{ marginTop: 30, marginHorizontal: 20 }}>
+          <Text style={{ fontSize: 18, fontWeight: "bold" }}>Events</Text>
+          <FlatList
+            data={events}
+            renderItem={renderEvent}
+            keyExtractor={(item) => item.id.toString()}
+            ListEmptyComponent={
+              <Text style={{ textAlign: "center", marginTop: 10 }}>No events found.</Text>
+            }
+            contentContainerStyle={styles.combinedList}
+          />
+        </View>
+      )}
         </>
       )}
+     
     </SafeAreaView>
   );
 }
@@ -714,6 +836,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     borderRadius: 8,
     marginBottom: 10,
+  },
+  combinedList: {
+    padding: 16,
+    paddingBottom: 100, // Add padding to ensure the last item is visible
   },
   postContent: {
     fontSize: 16,
