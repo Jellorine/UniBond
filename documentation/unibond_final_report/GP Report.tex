@@ -1,0 +1,632 @@
+% LaTeX Template for IT3162 Project Report, Version 1.0
+% Created by: T. Jeyamugan
+
+
+\documentclass[12pt, a4paper]{report}
+\usepackage[pdftex]{graphicx} %for embedding images
+\usepackage{url} %for proper url entries
+% \usepackage[bookmarks, colorlinks=false, pdfborder={0 0 0}, pdftitle={<pdf title here>}, pdfauthor={<author's name here>}, pdfsubject={<subject here>}, pdfkeywords={<keywords here>}]{hyperref} %for creating links in the pdf version and other additional pdf attributes, no effect on the printed document
+
+\usepackage[colorlinks]{hyperref}
+\renewcommand*{\contentsname}{\hyperlink{contents}{Contents}}
+\renewcommand*{\thepage}{\hyperref[contents]{\arabic{page}}}
+
+\begin{document}
+\renewcommand\bibname{References} %Renames "Bibliography" to "References" on ref page
+
+\pagenumbering{roman} %numbering before main content starts
+%Include: title, acknowledgement, dedication, tables, etc
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Title page
+\begin{titlepage}
+
+\begin{center}
+
+% Title
+\Large \textbf {Mobile Platform to foster Alumni and Student Engagement - UNIBOND}\\%\\[0.5in]
+
+\vspace{1in}%
+
+
+\normalsize by \\%
+\vspace{1em}
+\textup{\large {\bf [Group-13]}\\}
+ \vspace{1in}%
+
+
+ \large \emph{Submitted in partial fulfilment of the requirement
+for the degree of Bachelor of Science in Information Technology}
+\vspace{2.5in}
+
+
+
+
+\vspace{1em}
+Department of Physical Science\\
+Faculty of Applied Science\\
+University of Vavuniya\\
+% \vspace{1em}
+
+
+% \vspace{.1in}
+% \date{}\\
+
+
+\vfill
+
+March, 2025
+
+\end{center}
+
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      declaration
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Declaration}
+\chapter*{Declaration}
+We Group - 13 declare that this Project Report is original and has not been published and/or submitted for any other degree award to any other university before.
+
+
+\begin{table}[!ht]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{\#} & \textbf{Names}  & \textbf{Registration Number} & \textbf{Signature} \\ \hline
+1           &  W.H.I.Udisha& 2020/ICT/ 01&                    \\ \hline
+2           & C.L.Jellorine& 2020/ICT/ 06&                    \\ \hline
+3           & M.I.A.Ahamed& 2020/ICT/ 16&                    \\ \hline
+4           & K.H.S.Dilakshana& 2020/ICT/ 21&                    \\ \hline
+5           & P.Sujani& 2020/ICT/ 27&                    \\ \hline
+6           & K.V.L.Kumara& 2020/ICT/ 73&                    \\ \hline
+7           & D.M.T.L.Disanayaka& 2020/ICT/ 107&                    \\ \hline
+\end{tabular}%
+}
+\end{table}
+\vspace{0.5in}
+\noindent
+Date: ---------------\\
+
+
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Supervisor's   Approval
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Approval}
+\chapter*{Approval}
+This Project Report has been submitted for examination with the approval of the supervisor/ following supervisors.
+
+\vspace{1.0em}
+\noindent
+Signature:          \hspace{4in} Date: \\
+
+\vspace{2.0em}
+
+\noindent
+Ms. Yasotha Ram Ramanan 
+
+Senior Lecturer,
+
+Department of Physical Science, 
+
+Faculty of Applied Science. \\
+
+\vspace{2.0em}
+\noindent
+ \hspace{4in}  \\
+
+\vspace{2.0em}
+\noindent
+\\
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%       Abstract
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Abstract}
+\chapter*{Abstract}
+The UniBond mobile application is designed to enhance alumni engagement and foster networking opportunities between university alumni and current students. As a dynamic platform, UniBond facilitates professional connections, mentorship, and career development within the academic community. Alumni can post job opportunities, projects,while students can showcase their skills, apply for jobs, and collaborate with industry professionals.
+
+The app aims to strengthen alumni-student relationships by offering features such as communication tools and event updates. With a focus on seamless interaction and professional networking, UniBond creates a robust ecosystem for career growth while supporting alumni involvement.
+
+By bridging the gap between students and successful alumni, UniBond enhances career prospects, maintains lifelong connections, and fosters continuous academic support. This initiative serves as a vital tool for networking, professional development, and community building within higher education.
+
+
+
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%       acknowledgement
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Acknowledgement}
+\chapter*{Acknowledgement}
+We are deeply indebted to our project supervisor, Ms. Yasotha Ram Ramanan whose unlimited steadfast support and inspirations have made this project a great success. In a very special way, we thank him for all the support he has given us to ensure that we succeed in this challenging study.
+
+Special thanks go to our friends and families who have contained the hectic moments and stress we have been through during the course of the research project.
+
+We thank the school for giving us the opportunity to work as a team which has indeed promoted our team-work spirit and communication skills. We also thank the individual group members for the good team spirit and solidarity.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\newpage
+\pagenumbering{arabic} %reset numbering to normal for the main content
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                  introduction
+
+\chapter{Introduction}
+
+\section{Background}
+Many universities face challenges in maintaining strong alumni-student relationships and facilitating career opportunities. While platforms like LinkedIn provide broad networking opportunities, they lack the targeted focus necessary for university-specific connections. As a result, students often struggle to access mentorship, job opportunities, and professional guidance from alumni who share their academic background.
+
+The \textbf{UniBond} app addresses these challenges by providing a streamlined, university-exclusive networking tool. It is designed to foster student-alumni engagement through dedicated communication channels, mentorship programs, and job postings tailored to the university community. By creating a centralized platform for career development and collaboration, UniBond strengthens alumni involvement while enhancing students' professional growth.
+
+ 
+
+
+\section{Problem Statement}
+Traditional alumni networking and student career development platforms often face challenges such as limited interaction between alumni and students, lack of structured mentorship opportunities, and difficulties in accessing job postings and collaborative projects. Moreover, universities struggle to maintain continuous engagement with their alumni, leading to missed opportunities for professional growth and support. Existing platforms do not always provide a seamless and organized space for alumni-student collaboration, highlighting the need for a more integrated solution that fosters meaningful connections, career advancement, and lifelong engagement within the academic community.
+\section{Main Objective}
+The primary objectives of the UniBond app are to facilitate stronger connections between alumni and current students for career growth, provide alumni with a place to post projects and job opportunities while collaborating with students, and maintain an organized platform for students and alumni to collaborate through features such as chat, job applications, and networking.
+\subsection{Specific Objectives}
+The specific objectives of the study were:
+\begin{itemize}
+\item Develop a mobile application that enhances alumni engagement and facilitates networking between university alumni and current students. 
+\item To carry out a preliminary study on the existing system used for alumni-student interactions and professional networking.
+\item Design the system to allow alumni to post job opportunities, projects, and sponsorships while allowing students to showcase their skills and collaborate with industry professionals.
+\item Implement the designed system.
+\item To carry out the testing process of the implemented system.
+\end{itemize}
+
+\section{Scope of the study}
+This project limited its self to a mechanism that enhances alumni-student engagement through a mobile application, facilitating professional networking and career development. It focused on providing a platform where alumni can post job opportunities, and projects, while allowing students to showcase their skills, apply for jobs, and collaborate with industry professionals.
+The system incorporated communication features such as messaging and forums to support seamless interaction between alumni and students. Additionally, it included personalized dashboards for managing interactions, job applications, and mentorship activities. The project was designed to ensure usability, accessibility, and an intuitive user experience, making it an effective tool for career growth and continuous academic support within the university community.
+\section{Significance of the study}
+The \textbf{UniBond} project is significant because it helps connect alumni and current students, creating opportunities for professional networking, mentorship, and career growth. By allowing alumni to post job opportunities and projects, students can apply for jobs, showcase their skills, and collaborate with industry professionals. This strengthens the relationship between alumni and the university, benefiting both students and alumni.
+
+The platform also provides a space for alumni to mentor students, offering valuable guidance for their careers. Ultimately, \textbf{UniBond} serves as a tool that supports career development and continuous academic growth, benefiting students, alumni, and the university community. It can also serve as a model for other institutions looking to enhance alumni-student engagement.
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%                 literature
+\chapter{Literature Review}
+
+\section{Overview}
+The main purpose of this chapter is to present some general consensus on the theoretical support and previous empirical studies on on alumni engagement, professional networking, and mentorship platforms. This review explores existing systems that facilitate connections between alumni and students, analyzing their effectiveness, limitations, and areas for improvement.
+
+The chapter also examines related studies on career development platforms, job opportunity portals, and digital mentorship systems to identify best practices and gaps that the UniBond application aims to address. Additionally, relevant theories on networking, social capital, and technology adoption in educational and professional settings are discussed to provide a strong foundation for the development of the proposed system
+
+\section{Existing Systems}
+
+\item 1
+. LinkedIn\cite{linkedin}
+ 
+\item 2
+. Handshake\cite{handshake}
+
+\item 3
+. Graduway\cite{graduway}
+
+\item 4
+. Almabase\cite{almabase}
+
+\item 5
+. PeopleGrove \cite{peoplegrove}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%                 methodology
+\chapter{Methodology}
+
+\section{Introduction}
+This chapter contains a description of the techniques used in developing the UniBond application. The methodology followed a systematic approach to ensure the creation of a well-structured alumni and student connection app.
+
+
+
+\section{User Roles}
+The system incorporates role differentiation between students and alumni, with specific features tailored to each group.
+
+\section{Development Approach}
+The development of the UniBond app follows a systematic approach, employing modern technologies and methodologies to create a platform that connects university students and alumni. The methodology includes the following phases:
+
+\subsection{Requirement Analysis}
+The first step in the development of the UniBond app was identifying the core requirements for the platform. These requirements were gathered through discussions with university faculty, students, and alumni. The primary goal was to build a secure and efficient platform for networking, project collaboration, and job opportunities for students and alumni.
+
+\subsection{System Design}
+In this phase, the overall system architecture was designed to ensure it meets the identified requirements. The design includes the following key aspects:
+
+\begin{itemize}
+    \item \textbf{User Roles:} The system does not incorporate role differentiation between students and alumni.
+    \item \textbf{Database Design:} The database schema was designed to store user data, including profiles, posts, job opportunities, and interactions. The app uses \textbf{Supabase} as the backend, which provides a real-time database.
+    \item \textbf{User Interface (UI) Design:} The UI was designed using \textbf{React Native with Expo}, focusing on ease of use and a clean, modern interface. Multiple screens were created to handle tasks such as posting content, viewing job opportunities, and managing user profiles.
+\end{itemize}
+
+\subsection{Development Process}
+The app was developed using \textbf{React Native} with \textbf{Expo} for mobile app development. The following steps outline the core development process:
+
+\begin{itemize}
+    \item \textbf{Frontend Development:} The frontend was built using React Native, enabling the app to run on both Android and iOS platforms. The screens for posting content, viewing posts, chats, project collaboration, job opportunities, and profile management were developed.
+    \item \textbf{Backend Development:} The backend uses \textbf{Supabase}, which provides a Postgres database, authentication, and real-time capabilities. Supabase handles user authentication, data storage, and real-time data synchronization between users.
+    \item \textbf{User Authentication:} It uses email and password authentication for logging in.
+\end{itemize}
+
+\subsection{Testing and Debugging}
+After development, thorough testing was conducted to ensure the functionality and stability of the app. The following testing methods were used:
+
+\begin{itemize}
+    \item \textbf{Unit Testing:} Individual components and functions were tested to ensure they work correctly in isolation.
+    \item \textbf{Integration Testing:} The integration of the frontend with the backend, as well as the communication between different app screens, was tested to ensure smooth transitions and data flow.
+    \item \textbf{User Acceptance Testing (UAT):} A group of target users (students and alumni) tested the app to ensure it meets their needs and expectations. Feedback was gathered and used to refine features and fix any bugs.
+\end{itemize}
+
+\subsection{Deployment}
+Once the app passed the testing phase, it was deployed to the respective app stores. The app is available for download on both \textbf{Google Play Store} and \textbf{Apple App Store}, making it accessible to students and alumni for use.
+
+\subsection{Future Enhancements}
+While the initial version of the app provides basic functionalities for students and alumni, several future enhancements are planned. These include:
+
+\begin{itemize}
+    \item \textbf{Improved Security:} Enhanced security measures, including encryption of user data and implementation of security protocols for data protection.
+\end{itemize}
+
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%                 analysisanddesign
+\chapter{System Study, Analysis and Design}
+
+\section{Overview of the System}
+The UNIBOND mobile application was conceptualized to enhance alumni engagement for the University of Vavuniya. The system study began with identifying the communication gaps between alumni and the university, as well as the absence of a centralized platform for networking, event updates, and academic news.
+
+Stakeholders, including students, alumni, and faculty, were consulted to gather requirements. Key insights highlighted the need for a secure login system, personalized user profiles, job postings, event announcements, and the ability for alumni to connect and share updates.
+
+\section{System Analysis}
+
+Following the requirement gathering phase, the analysis focused on understanding how the proposed mobile application could meet user expectations. The core modules identified were:
+
+\begin{itemize}
+    \item \textbf{Authentication System} – Validates users based on their university credentials to restrict access to legitimate alumni.
+    \item \textbf{User Profile Module} – Displays user-specific data such as graduation year, department, and contact information.
+    \item \textbf{Job Posting and Listings} – Allows institutions and alumni to share career opportunities.
+    \item \textbf{Event Announcements} – Notifies users of university events and alumni meetups.
+    \item \textbf{Communication Features} – Enables messaging or posting updates for community interaction.
+\end{itemize}
+
+System modeling tools like use case diagrams and data flow diagrams (DFDs) were considered to visualize system functionality and data interactions. The backend was powered by Supabase, selected for its real-time data capabilities and ease of integration with React Native.
+
+\section{System Design}
+
+The system design phase focused on developing a scalable and maintainable architecture. The frontend was built using React Native with the Expo framework to ensure cross-platform compatibility. TypeScript was used for type safety and improved code maintainability.
+
+A modular design approach was adopted to separate concerns and improve readability. Navigation was handled using React Navigation and React Native Paper was used for UI components to maintain a consistent and modern user interface.
+
+The database schema on Supabase was structured with separate tables for users, job posts, events, and profiles. Security rules were implemented to ensure authorized access to data based on user roles.
+
+Wireframes and UI mockups were created during the design phase to finalize the app layout and ensure usability. Feedback from early testing was incorporated into the final design before development began.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%                 presentation
+\chapter{Presentation of Results}
+\section{Introduction}
+This chapter presents screenshots of the system interfaces and explains the programming environment.
+
+\subsection{Authentication Pages}
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/StartPage.png}
+        \caption{System Start Page}
+        \label{fig:start-page}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/LandingPage.png}
+        \caption{System Landing Page}
+        \label{fig:landing-page}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/LoginPage.png}
+        \caption{Login Page}
+        \label{fig:login-page}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/LoginCredintials.png}
+        \caption{Login Credentials Page}
+        \label{fig:login-credentials}
+    \end{minipage}
+\end{figure}
+
+\subsection{Signup Pages}
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/SignupPageForStudent.png}
+        \caption{Student Signup Page}
+        \label{fig:student-signup}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/SignupForAlumni.png}
+        \caption{Alumni Signup Page}
+        \label{fig:alumni-signup}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/MyProfile.png}
+        \caption{My Profile Page}
+        \label{fig:my-profile}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/EditMyProfile.png}
+        \caption{Edit Profile Page}
+        \label{fig:edit-profile}
+    \end{minipage}
+\end{figure}
+
+\subsection{Main Application Pages}
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/HomeFeed.png}
+        \caption{Home Feed Page}
+        \label{fig:home-feed}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/Notifications.png}
+        \caption{Notifications Page}
+        \label{fig:notifications}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/MessageScreen.png}
+        \caption{Message Screen}
+        \label{fig:message-screen}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/ChatList.png}
+        \caption{Chat List}
+        \label{fig:chat-list}
+    \end{minipage}
+\end{figure}
+
+\subsection{Job and Project Pages}
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/JobPage.png}
+        \caption{Job Page}
+        \label{fig:job-page}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/ProjectPage.png}
+        \caption{Project Page}
+        \label{fig:project-page}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/ProjectStatusPage.png}
+        \caption{Project Status Page}
+        \label{fig:project-status}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/SavedJob.png}
+        \caption{Saved Job Page}
+        \label{fig:saved-job}
+    \end{minipage}
+\end{figure}
+
+\subsection{Content Creation Pages}
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/AddScreen.png}
+        \caption{Add Screen}
+        \label{fig:add-screen}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/AddPostScreen.png}
+        \caption{Add Post Screen}
+        \label{fig:add-post}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/AddJobScreen.png}
+        \caption{Add Job Screen}
+        \label{fig:add-job}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/AddProjectScreen.png}
+        \caption{Add Project Screen}
+        \label{fig:add-project}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/AddEventScreen.png}
+        \caption{Add Event Screen}
+        \label{fig:add-event}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/SavedProject.png}
+        \caption{Saved Project Page}
+        \label{fig:saved-project}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/SearchScreen.png}
+        \caption{Search Screen}
+        \label{fig:search-screen}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/SearchResults.png}
+        \caption{Search Results Page}
+        \label{fig:search-results}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/RandomUserProfile.png}
+        \caption{Random User Profile}
+        \label{fig:random-profile}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/DropDownInUser.png}
+        \caption{User Dropdown Menu}
+        \label{fig:user-dropdown}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/MyFollowingList.png}
+        \caption{Following List}
+        \label{fig:following-list}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/DonationScreen.png}
+        \caption{Donation Screen}
+        \label{fig:donation-screen}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Chapter5/DonationDetails.png}
+        \caption{Donation Details}
+        \label{fig:donation-details}
+    \end{minipage}
+\end{figure}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%                 conclusion.tex}
+\chapter{Limitations, Recommendations and Conclusion}
+
+\section*{Limitations}
+
+\subsection*{1. Lack of User Verification Mechanism}
+The app currently does not have any form of user verification for both students and alumni. This creates a potential security risk, as there is no way to ensure that users are legitimate members of the university community, which may lead to unauthorized access.
+
+\subsection*{Recommendation}
+Implement a user verification process for both **students** and **alumni**. For **students**, a QR code scanning method can be implemented, where students can scan a QR code linked to their university student ID. Upon scanning, they should enter the password of their university VLE account to verify their identity. For **alumni**, verification can be done using email-based verification to confirm their alumni status.
+
+\subsection*{2. Scalability Issues}
+As the number of users grows, the app may experience performance degradation. Currently, there are concerns regarding slow load times, crashes, and inefficient data handling, especially as more content is added to the platform. Since the app is using **Supabase**, which provides a free tier for cloud-based services, there is a limitation in terms of long-term scalability. Supabase offers a 30-day free trial, after which a paid subscription or a transition to a more scalable database service will be necessary to maintain performance and reliability as the user base grows.
+
+\subsection*{Recommendation}
+Ensure the backend is optimized for scalability. This can be achieved by continuing to use cloud services like Supabase for the short term, while preparing to transition to a more robust solution that accommodates larger user volumes. Consider upgrading to a paid Supabase plan or evaluating other scalable backend solutions such as Firebase or AWS for long-term growth. Additionally, optimizing the app’s performance through proper indexing, query optimization, and caching mechanisms will help manage a growing user base and prevent performance bottlenecks.
+
+\subsection*{3. Insufficient Data Security and Privacy Measures}
+The app does not currently have robust data security protocols, making it vulnerable to security breaches, especially when dealing with sensitive personal data such as student IDs, alumni records, and other private details.
+
+\subsection*{Recommendation}
+Implement **data encryption** for both storage and transmission to ensure the safety of personal data. The app should also comply with **data protection regulations** like **GDPR** and **data privacy laws** to protect users' personal information.
+
+\subsection*{4. Lack of Content Moderation and Reporting Features}
+The app lacks mechanisms to moderate user-generated content, making it vulnerable to the posting of inappropriate, irrelevant, or harmful content. There is no current way to report such issues, leading to potential abuse or misuse of the platform.
+
+\subsection*{Recommendation}
+Integrate a content moderation system that allows users to flag inappropriate content. A **reporting mechanism** should also be implemented to ensure that any offensive or harmful posts are swiftly addressed by the system administrators.
+
+\subsection*{5. Limitation of Sharing Posts}
+Currently, the UniBond app does not have a publicly accessible web version. As a result, posts can only be shared using in-app deep links (e.g., \texttt{myapp://post/41}), which are not accessible outside the mobile application environment. This leads to the following limitations:
+
+\begin{itemize}
+    \item \textbf{Limited Accessibility:} Users who do not have the UniBond app installed cannot open shared post links.
+    \item \textbf{No Web Preview:} Social media platforms like LinkedIn and WhatsApp do not generate link previews without a public URL.
+    \item \textbf{Incomplete Sharing:} Currently, only post text and deep links are shared, while images require a separate sharing process, causing inconsistency.
+\end{itemize}
+
+\subsection*{Recommendation}
+To overcome these limitations, the following steps are recommended:
+
+\begin{itemize}
+    \item \textbf{Deploy a Web Version:} Create a web interface for UniBond using a framework like Next.js and host it on a public domain (e.g., \texttt{https://unibond.com}).
+    \item \textbf{Generate Public Post URLs:} Ensure each post has a unique public URL (e.g., \texttt{https://unibond.com/post/41}) that users can share.
+    \item \textbf{Optimize Image Sharing:} Store post images in a publicly accessible storage (e.g., Supabase Storage or Firebase Storage) and attach direct URLs to shared messages.
+    \item \textbf{Improve Deep Linking:} Implement universal links so that shared links open in the app if installed or in a web browser otherwise.
+\end{itemize}
+
+By implementing these improvements, post-sharing functionality in UniBond will be more effective and user-friendly.
+
+\section*{Conclusion}
+The **UniBond app** holds significant potential for fostering strong connections and collaborations between students and alumni. However, the lack of **user verification**, scalability issues, weak data security, absence of content moderation tools, and limitations in post-sharing functionality are notable limitations that must be addressed. Implementing a user verification process, improving scalability, enhancing security measures, introducing moderation features, and improving post-sharing will greatly improve the app’s usability, security, and effectiveness. By addressing these limitations, UniBond can provide a secure, efficient, and reliable platform for the university community.
+
+
+
+
+
+
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{IEEEtran}
+\bibliography{references} 
+
+\end{document}
